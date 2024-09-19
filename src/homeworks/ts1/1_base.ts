@@ -18,7 +18,13 @@ export const round = (value : number, accuracy = 2) : number=> {
 const transformRegexp =
   /(matrix\(-?\d+(\.\d+)?, -?\d+(\.\d+)?, -?\d+(\.\d+)?, -?\d+(\.\d+)?, )(-?\d+(\.\d+)?), (-?\d+(\.\d+)?)\)/;
 
-export const getTransformFromCss = (transformCssString : string) : {x : number, y : number} => {
+
+type CssTransform = {
+  x : number, 
+  y : number
+}
+
+export const getTransformFromCss = (transformCssString : string) : CssTransform  => {
   const data = transformCssString.match(transformRegexp);
   if (!data) return { x: 0, y: 0 };
   return {
@@ -27,11 +33,11 @@ export const getTransformFromCss = (transformCssString : string) : {x : number, 
   };
 };
 
-export const getColorContrastValue = ([red, green, blue] : Array<number>) : number =>
+export const getColorContrastValue = ([red, green, blue] : [number, number, number]) : number =>
   // http://www.w3.org/TR/AERT#color-contrast
   Math.round((red * 299 + green * 587 + blue * 114) / 1000);
 
-export const getContrastType = (contrastValue : number)  : string=> (contrastValue > 125 ? 'black' : 'white');
+export const getContrastType = (contrastValue : number)  : 'black' | 'white' => (contrastValue > 125 ? 'black' : 'white');
 
 export const shortColorRegExp = /^#[0-9a-f]{3}$/i;
 export const longColorRegExp = /^#[0-9a-f]{6}$/i;
@@ -54,12 +60,45 @@ export const hex2rgb = (color : string) : Array<number> => {
   return [red, green, blue];
 };
 
-export const getNumberedArray = (arr : Array<any>) : Array<{value : any, number : number}>  => arr.map((value : any, number : number)=> ({ value, number }));
-export const toStringArray = (arr : Array<{value : string, number : number}>) : Array<string> => arr.map(({ value, number } : {value : string, number : number})=> `${value}_${number}`);
 
-export const transformCustomers = (customers : Array<{id: string, name : string, age : number, isSubscribed : boolean}>) : { [key: string]: { name: string, age: number, isSubscribed: boolean } }  => {
-  return customers.reduce((acc : { [key: string]: { name: string, age: number, isSubscribed: boolean } }, customer) => {
+type MappedNumberArray = {
+  value : number, 
+  number : number
+}
+
+type MappedStringrArray = {
+  value : string, 
+  number : number
+}
+
+
+export const getNumberedArray = (arr : Array<number>) : Array<MappedNumberArray>  => arr.map((value : number, number : number)=> ({ value, number }));
+export const toStringArray = (arr : Array<MappedStringrArray>) : Array<string> => arr.map(({ value, number } : {value : string, number : number})=> `${value}_${number}`);
+
+
+type CustomerInfo = {
+  id: string, 
+  name : string, 
+  age : number, 
+  isSubscribed : boolean
+}
+
+
+type CustomersPocessedInfo = { 
+  name: string, 
+  age: number, 
+  isSubscribed: boolean 
+}
+
+
+export const transformCustomers = (customers : Array<CustomerInfo>) : { [key: string] : CustomersPocessedInfo }  => {
+  return customers.reduce((acc : { [key: string]: CustomersPocessedInfo }, customer) => {
     acc[customer.id] = { name: customer.name, age: customer.age, isSubscribed: customer.isSubscribed };
     return acc;
   }, {});
 };
+
+
+const expm  = () => {
+
+}
